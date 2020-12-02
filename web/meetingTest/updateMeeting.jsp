@@ -1,0 +1,19 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>Title</title>
+</head>
+<body>
+<table>
+    <tr>
+        <th>会议名称</th>
+        <th>会议地点</th>
+        <th>参加人数</th>
+        <th>参加时间</th>
+    </tr>
+    <tr>
+        <td>${meeting.name}</td>
+    </tr>
+</table>
+</body>
+</html>
