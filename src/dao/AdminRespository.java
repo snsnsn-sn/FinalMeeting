@@ -1,6 +1,7 @@
 package dao;
 
 import vo.Admin;
+
 import java.util.List;
 
 public interface AdminRespository {
@@ -18,4 +19,6 @@ public interface AdminRespository {
     public int count();
     //查表是否存在
     public boolean check(String id, String password);
+    //通过userId查，得到该用户信息
+    public Admin findByUserId(String userId);
 }

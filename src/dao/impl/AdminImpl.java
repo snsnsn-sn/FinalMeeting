@@ -3,6 +3,7 @@ package dao.impl;
 import dao.DBConnection.DBConn;
 import dao.AdminRespository;
 import vo.Admin;
+import vo.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,7 +42,8 @@ public class AdminImpl implements AdminRespository{
             while(rs.next()){
                 String id = rs.getString(1);
                 String password = rs.getString(2);
-                admin = new Admin(id,password);
+                String name = rs.getString(3);
+                admin = new Admin(id,password,name);
                 list.add(admin);
             }
         } catch (SQLException e) {
@@ -69,7 +71,8 @@ public class AdminImpl implements AdminRespository{
             while(rs.next()){
                 String id = rs.getString(1);
                 String password = rs.getString(2);
-                admin = new Admin(id,password);
+                String name = rs.getString(3);
+                admin = new Admin(id,password,name);
                 list.add(admin);
             }
         } catch (SQLException e) {
@@ -192,6 +195,34 @@ public class AdminImpl implements AdminRespository{
             DBConn.close();
         }
         return flag;
+    }
+
+    @Override
+    public Admin findByUserId(String adminId){
+        ResultSet rs = null;
+        Admin u=null;
+
+        String sql = "select * from user where adminId = ?";
+
+        conn = DBConn.getConnection();
+        try {
+            pre = conn.prepareStatement(sql);
+            pre.setString(1,adminId);
+            rs = pre.executeQuery();
+            while(rs.next()){
+                String adminId1 = rs.getString("adminId");
+                String password = rs.getString("password");
+                String name=rs.getString("name");
+                u = new Admin(adminId1,password,name);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            DBConn.close();
+        }
+
+        return u;
     }
 
 

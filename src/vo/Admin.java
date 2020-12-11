@@ -3,6 +3,12 @@ package vo;
 public class Admin {
     private String adminId;//管理员账号
     private String password;//管理员密码
+    private String name;//管理员姓名
+
+
+    public String getName() {return name;}
+
+    public void setName(String name) {this.name = name;}
 
     public String getAdminId() {
         return adminId;
@@ -20,10 +26,12 @@ public class Admin {
         this.password = password;
     }
 
-    public Admin(String adminId, String password) {
+    public Admin(String adminId, String password, String name) {
         this.adminId = adminId;
         this.password = password;
+        this.name = name;
     }
+
 
     @Override
     public String toString() {
