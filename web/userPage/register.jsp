@@ -11,7 +11,7 @@
     <title>注册页面</title>
 </head>
 <body>
-还没做好
+直接在数据库里加个用户就完了
 <a href="/ms/userPage/index.jsp">返回</a>
 </body>
 </html>

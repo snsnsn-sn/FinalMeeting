@@ -8,224 +8,295 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>会议管理</title>
 
     <!-- 引入 bootstrap核心css-->
-    <link rel="stylesheet"  href="/ms/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/ms/css/bootstrap.min.css"/>
     <!-- 引入jQuery核心js文件-->
     <script src="/ms/js/jquery-3.1.1.min.js"></script>
     <!-- 引入bootstrap核心js文件-->
     <script src="/ms/js/bootstrap.min.js"></script>
     <style>
-        a.active{
+        a.active {
             background-color: #2b669a;
             color: white;
         }
 
-        .navbar-right .dropdown-menu{
+        .navbar-right .dropdown-menu {
             right: 0;
             left: -45px;
         }
+
+        th {
+            text-align: center;
+        }
     </style>
 
+    <script src="/ms/js/meetingSys.js"></script>
     <script>
         //加载页面
+        var requestId = 'null';
         $(function () {
-            var meetingId='<%=request.getParameter("mid")%>';
+            requestId = '<%=request.getParameter("mid")%>';
+            // alert("meetingId=" + meetingId);
 
-            if(check_login())
-            {
-                $("#nav_left").load("/ms/userPage/nav.html #left_nav");
-                getMeeting(meetingId);
-                meetingImg();
-            }
-            else
-            {
+            //未登录
+            if (!check_login('<%=session.getAttribute("userID")%>', '<%=session.getAttribute("userName")%>')) {
+                $("#nav_bar").load("/ms/userPage/nav.html");//载入游客导航栏
                 alert("请先登录!!");
-                window.location.href='/ms/userPage/login.jsp';
+                window.location.href = '/ms/userPage/login.jsp';
+            } else {
+                getMeeting();
+                getInfo();
+                getParticipants();
             }
         })
-
-        function meetingImg() {
-            $('#chooseImage').on('change',function(){
-                var filePath = $(this).val(), //获取到input的value，里面是文件的路径
-                    fileFormat = filePath.substring(filePath.lastIndexOf(".")).toLowerCase(),
-                    src = window.URL.createObjectURL(this.files[0]); //转成可以在本地预览的格式
-
-                // 检查是否是图片
-                if( !fileFormat.match(/.png|.jpg|.jpeg/) ) {
-                    error_prompt_alert('上传错误,文件格式必须为：png/jpg/jpeg');
-                    return;
-                }
-
-                $('#cropedBigImg').attr('src',src);
-            });
-        }
-
-        function getMeeting(meetingId) {
-            $.get(
-                '/ms/meeting',
-                {fun:'midQuery',mid:meetingId},
-                function (response) {
-                    // alert(response);
-                    var o=JSON.parse(response);
-                    var mid=o[i].meetingId;
-                    var mname=o[i].meetingName;
-                    var place=o[i].place;
-                    var time=o[i]/place;
-                    var state;
-                    if(o[i]==0)
-                        state="未开始";
-                    if(o[i].state==1)
-                        state="报名截止";
-                }
-            )
-        }
-
-        function check_login() {
-            var login_id='<%=session.getAttribute("userID")%>';
-            return login_id!='null'?true:false;
-        }
     </script>
 </head>
 <body>
 <!--导航条-->
 <%--  ======================================================================================================================--%>
-<div id="nav_bar">
-    <nav class="navbar navbar-default navbar-inverse">
-        <div class="container">
-            <div id="nav_left"></div>
-
-            <!-- 导航栏组件 -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown">
-                        <a href="login.jsp" id="login_a" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><!--用户提示-->
-                            <img src="https://static.hdslb.com/images/akari.jpg" class="img-circle" style="height: 30px" width="30px">
-                            <%=session.getAttribute("userName")%>
-                        </a>
-                        <ul class="dropdown-menu" style="">
-                            <li><a href="#">个人中心</a></li>
-                            <li><a href="#">我的消息</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#" onclick="exit">退出登录</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div><!-- /.navbar-collapse -->
-        </div>
-    </nav>
-</div>
+<div id="nav_bar"></div>
 <%--  ======================================================================================================================--%>
 
-<%--下方内容--%>
-<div class="row">
-    <!--左侧菜单-->
-    <div class="col-sm-2" style="margin-left: 10px">
+<!--左侧菜单 -->
+<%--  ======================================================================================================================--%>
+<div class="col-sm-2" style="margin-left: 10px" id="left_menu"></div>
+<%--  ======================================================================================================================--%>
 
-        <div class="panel-group" id="accordion">
-            <!--面板 会议大厅-->
-            <div class="panel panel-default">
-                <div class="panel-heading"  id="MeetingHall">
-                    <h4 class="panel-title">             <!--data-parent:指定父容器-->   <!--href:指定对应面板-->
-                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#MeetingHallChild">
-                            <span class="glyphicon glyphicon-home active"></span> 会议大厅
-                        </a>
-                    </h4>
-                </div>
-                <div id="MeetingHallChild" class="panel-collapse collapse"> <%--in:加载时不隐藏--%>
-                    <div class="panel-body">
-                        <!--嵌套列表组-->
-                        <ul class="list-group">
-                            <li class="list-group-item"><a href="/ms/userPage/index.jsp">会议一览</a></li>
-                            <li class="list-group-item"><a href="/ms/userPage/MeetingHall/meetingQuery.jsp">会议查询</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <!--面板 我的会议-->
-            <div class="panel panel-default">
-                <div class="panel-heading"  id="MyMeeting">
-                    <h4 class="panel-title">             <!--data-parent:指定父容器-->   <!--href:指定对应面板-->
-                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#MyMeetingChild">
-                            <span class="glyphicon glyphicon-th-list"></span> 我的会议
-                        </a>
-                    </h4>
-                </div>
-                <div id="MyMeetingChild" class="panel-collapse collapse in">
-                    <div class="panel-body">
-                        <!--嵌套列表组-->
-                        <ul class="list-group">
-                            <li class="list-group-item"><a href="/ms/userPage/MyMeeting/created.jsp" class="text-danger">我发起的会议</a></li>
-                            <li class="list-group-item"><a href="/ms/userPage/MyMeeting/joined.jsp">我加入的会议</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <!--面板 我的订单-->
-            <div class="panel panel-default">
-                <div class="panel-heading"  id="MyOrder">
-                    <h4 class="panel-title">             <!--data-parent:指定父容器-->   <!--href:指定对应面板-->
-                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#MyOrderChild">
-                            <span class="glyphicon glyphicon-duplicate"></span> 我的订单
-                        </a>
-                    </h4>
-                </div>
-                <div id="MyOrderChild" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <!--嵌套列表组-->
-                        <ul class="list-group">
-                            <li class="list-group-item"><a href="/ms/userPage/MyOrder/pickOrder.jsp">接驾订单</a></li>
-                            <li class="list-group-item"><a href="/ms/userPage/MyOrder/hotelOrder.jsp">酒店订单</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+<!--页面正文-->
+<div class="col-sm-9">
+    <%--页头--%>
+    <div class="page-header">
+        <button class="btn btn-sm" onclick="window.location.href='/ms/userPage/MyMeeting/created.jsp'">
+            <span class="glyphicon glyphicon-menu-left"></span>
+        </button>
+        <h1 style="margin-top: -35px;margin-left: 45px" id="meetingTitle"></h1>
     </div>
 
-    <!--页面正文-->
-    <div class="col-sm-9">
-        <%--页头--%>
-        <div class="page-header">
-            <button class="btn btn-sm" onclick="window.location.href='/ms/userPage/MyMeeting/created.jsp'">
-                <span class="glyphicon glyphicon-menu-left"></span>
-            </button>
-            <h1 style="margin-top: -35px;margin-left: 45px" id="meetingTitle">武林大会</h1>
-        </div>
+    <div>
+        <!-- 会议管理标签页 -->
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#mc" aria-controls="home" data-toggle="tab">会议信息管理</a></li>
+            <li><a href="#pc" aria-controls="profile" data-toggle="tab">与会者管理</a></li>
+        </ul>
 
-        <div>
-            <!-- 会议管理标签页 -->
-            <ul class="nav nav-tabs">
-                <li  class="active"><a href="#mc" aria-controls="home" data-toggle="tab">会议信息管理</a></li>
-                <li><a href="#profile" aria-controls="profile" data-toggle="tab">与会者管理</a></li>
-            </ul>
+        <!-- 标签页内容-->
+        <div class="tab-content">
 
-            <!-- 标签页内容-->
-            <div class="tab-content">
-                <%--会议信息管理面板--%>
-                <div role="tabpanel" class="tab-pane active" id="mc">
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="list-group">
-                                <div href="#" class="list-group-item">
-                                    <h4 class="list-group-item-heading"><b>设置会议封面</b></h4>
-                                    <img id="cropedBigImg" value='custom' style="width: 300px;height: 150px" data-address='' />
-                                    <form class="container" enctype="multipart/form-data" method="post" id='formBox' name="form">
-                                        <input type="file" id="chooseImage"style="margin-top: 5px" name="file">
-                                        <!-- 保存用户自定义的背景图片 -->
-                                    </form>
+            <%--会议信息管理面板--%>
+            <div role="tabpanel" class="tab-pane active" id="mc">
+                <div class="panel-body">
+
+                    <div class="row">
+                        <%--左侧 会议图片 简介--%>
+                        <div class="col-sm-4">
+                            <div class="panel panel-default" style="margin: 10px;border-bottom: 5px">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">会议简介</h3>
                                 </div>
+                                <div class="panel-body" style="margin: 20px 36px;">
+                                    <img id="meetingImg" style="width: 100%;height: 180px">
+                                </div>
+                                <div class="text-center" style="margin: 36px 20px">
+                                    <h5 id="meetingBrief"></h5>
+                                </div>
+                                <button class="btn-block btn-success" data-toggle="modal"
+                                        data-target="#brief-edit">修改简介
+                                </button>
                             </div>
+                        </div>
+                        <%--右侧 --%>
+                        <div class="col-sm-6">
+                            <div class="item-label" style="margin-top: 8px">基础信息</div>
+                            <div class="table">
+                                <table class="table text-center">
+                                    <tbody id="basicSet">
+                                    <tr data-toggle="modal" data-target="#basic-edit">
+                                        <td>会议名称</td>
+                                        <td id="meetingName"></td>
+                                        <td><span class="glyphicon glyphicon-menu-right"></span></td>
+                                    </tr>
+                                    <tr data-toggle="modal" data-target="#basic-edit">
+                                        <td>会议地点</td>
+                                        <td id="meetingPlace"></td>
+                                        <td><span class="glyphicon glyphicon-menu-right"></span></td>
+                                    </tr>
+                                    <tr data-toggle="modal" data-target="#basic-edit">
+                                        <td>会议时间</td>
+                                        <td id="meetingTime"></td>
+                                        <td><span class="glyphicon glyphicon-menu-right"></span></td>
+                                    </tr>
+                                    </tr>
+                                    <tr data-toggle="modal" data-target="#basic-edit">
+                                        <td>当前状态</td>
+                                        <td id="meetingState"></td>
+                                        <td><span class="glyphicon glyphicon-menu-right"></span></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="item-label" style="margin-top: 20px">详细设置</div>
+                            <div class="table">
+                                <table class="table text-center">
+                                    <tbody>
+                                    <tr data-toggle="modal" data-target="#detail-edit">
+                                        <td>会议酒店</td>
+                                        <td id="meetingHotel"></td>
+                                        <td><span class="glyphicon glyphicon-menu-right"></span></td>
+                                    </tr>
+                                    <tr data-toggle="modal" data-target="#detail-edit">
+                                        <td>接驾服务</td>
+                                        <td id="meetingCar"></td>
+                                        <td><span class="glyphicon glyphicon-menu-right"></span></td>
+                                    </tr>
+                                    <tr data-toggle="modal" data-target="#detail-edit">
+                                        <td>举办单位</td>
+                                        <td id="part"></td>
+                                        <td><span class="glyphicon glyphicon-menu-right"></span></td>
+                                </table>
+                            </div>
+                            <button class="btn btn-danger btn-block" onclick="meetingDelete()">删除会议</button>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div role="tabpanel" class="tab-pane" id="与会者管理面板">
-
+            <!--与会者管理标签页-->
+            <div role="tabpanel" class="tab-pane" id="pc">
+                <div class="container-fluid">
+                    <table class="table text-center">
+                        <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>姓名</th>
+                            <th>联系方式</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="participants">
+                        </tbody>
+                    </table>
                 </div>
             </div>
+        </div>
     </div>
+</div>
 
+
+<%--=================================================================================================================================--%>
+<%--模态框--%>
+<%--基本信息修改--%>
+<div id="basic-edit" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">基本信息修改</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label>会议名称</label>
+                        <input type="text" class="form-control" id="alterName">
+                    </div>
+                    <div class="form-group">
+                        <label>会议时间</label>
+                        <input type="date" class="form-control" id="alterTime">
+                    </div>
+                    <div class="form-group">
+                        <label>会议地点</label>
+                        <input type="text" class="form-control" id="alterPlace">
+                    </div>
+                    <div class="form-group">
+                        <label>会议状态</label>
+                        <select class="btn btn-default btn-block" id="alterState">
+                            <option value="0">未开始</option>
+                            <option value="1">报名截止</option>
+                            <option value="2">进行中</option>
+                            <option value="3">已结束</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="alterBasic()">确认修改</button>
+            </div>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<%--模态框--%>
+<%--详细信息修改--%>
+<div id="detail-edit" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">其他设置</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label>会议酒店</label>
+                        <input type="text" class="form-control" id="alterHotel" placeholder="请输入酒店名">
+                    </div>
+                    <div class="form-group">
+                        <label>接驾服务</label>
+                        <select class="btn btn-default btn-block" id="alterUseCar">
+                            <option value="1">提供</option>
+                            <option value="0">不提供</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>举办单位</label>
+                        <input type="text" class="form-control" id="alterPart">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="alterDetail()">确认修改</button>
+            </div>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<%--简介修改--%>
+<div id="brief-edit" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">简介修改</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label>会议封面</label>
+                        <input id="file" type="file" accept="image/png,image/gif" name="file"/>
+                    </div>
+                    <div class="form-group">
+                        <label>简介</label>
+                        <textarea class="form-control" rows="3" id="briefText"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="alterBrief()">确认修改</button>
+            </div>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 </body>
 </html>

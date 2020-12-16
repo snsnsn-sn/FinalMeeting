@@ -15,6 +15,7 @@ public class JoinMeetingImpl implements JoinMeetingDao {
     Connection conn = null;
     PreparedStatement pre = null;
 
+    int flag = 0;
 
     @Override
     public List<JoinMeeting> findAll(int pageId, int pageSize) {
@@ -24,86 +25,89 @@ public class JoinMeetingImpl implements JoinMeetingDao {
 
         String sql = "select * from joinmeeting limit ?,? order by userId";
 
-        pageId=(pageId-1)*pageSize;
+        pageId = (pageId - 1) * pageSize;
         try {
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
-            pre.setInt(1,pageId);
-            pre.setInt(2,pageSize);
+            pre.setInt(1, pageId);
+            pre.setInt(2, pageSize);
             rs = pre.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 String userid = rs.getString(1);
                 String meetingid = rs.getString(2);
-                jm = new JoinMeeting(userid,meetingid);
+                jm = new JoinMeeting(userid, meetingid);
                 list.add(jm);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally{
+        } finally {
             DBConn.close();//关闭数据库连接
         }
         return list;
     }
 
     @Override
-    public void insert(String userId, String meetingId) {
-        String sql="insert into joinmeeting values (?,?)";
+    public boolean insert(String userId, String meetingId) {
+        String sql = "insert into joinmeeting(userId,meetingId) values (?,?)";
         try {
+            flag = 0;
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
-            pre.setString(1,userId);
-            pre.setString(2,meetingId);
-            pre.executeUpdate();
+            pre.setString(1, userId);
+            pre.setString(2, meetingId);
+            flag = pre.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally{
+            return false;
+        } finally {
             DBConn.close();
+            return flag == 0 ? false : true;
         }
     }
 
     @Override
     public void deleteByUserId(String userId) {
-        String sql="delete from joinmeeting where userId = ?";
+        String sql = "delete from joinmeeting where userId = ?";
         try {
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
-            pre.setString(1,userId);
+            pre.setString(1, userId);
             pre.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally{
+        } finally {
             DBConn.close();
         }
     }
 
     @Override
     public void deleteByMeetingId(String meetingId) {
-        String sql="delete from joinmeeting where meetingId = ?";
+        String sql = "delete from joinmeeting where meetingId = ?";
         try {
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
-            pre.setString(1,meetingId);
+            pre.setString(1, meetingId);
             pre.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally{
+        } finally {
             DBConn.close();
         }
     }
 
     @Override
-    public void update(String userId, String userId1,String meetingId) {
-        String sql="update joinmeeting set userId = ?,meetingId = ? where userId = ?";
+    public void update(String userId, String userId1, String meetingId) {
+        String sql = "update joinmeeting set userId = ?,meetingId = ? where userId = ?";
         try {
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
-            pre.setString(1,userId1);
-            pre.setString(2,meetingId);
-            pre.setString(3,userId);
+            pre.setString(1, userId1);
+            pre.setString(2, meetingId);
+            pre.setString(3, userId);
             pre.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        }  finally{
+        } finally {
             DBConn.close();
         }
     }
@@ -118,9 +122,8 @@ public class JoinMeetingImpl implements JoinMeetingDao {
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
             rs = pre.executeQuery();
-            if(rs.next())
-            {
-                rowCount=rs.getInt(1);
+            if (rs.next()) {
+                rowCount = rs.getInt(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -139,9 +142,9 @@ public class JoinMeetingImpl implements JoinMeetingDao {
         conn = DBConn.getConnection();
         try {
             pre = conn.prepareStatement(sql);
-            pre.setString(1,userId);
+            pre.setString(1, userId);
             rs = pre.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 String meetingId = rs.getString(2);
                 list.add(meetingId);
             }
@@ -160,9 +163,9 @@ public class JoinMeetingImpl implements JoinMeetingDao {
         conn = DBConn.getConnection();
         try {
             pre = conn.prepareStatement(sql);
-            pre.setString(1,meetingId);
+            pre.setString(1, meetingId);
             rs = pre.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 String userId = rs.getString(1);
                 list.add(userId);
             }
@@ -170,6 +173,25 @@ public class JoinMeetingImpl implements JoinMeetingDao {
             e.printStackTrace();
         }
         return list;
+    }
+
+    @Override
+    public boolean deleteParticipant(String mid, String uid) {
+        String sql = "delete from joinmeeting where meetingId =? and userId=?";
+        try {
+            flag = 0;
+            conn = DBConn.getConnection();
+            pre = conn.prepareStatement(sql);
+            pre.setString(1, mid);
+            pre.setString(2, uid);
+            flag = pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            DBConn.close();
+            return flag == 0 ? false : true;
+        }
     }
 
     @Override
@@ -184,19 +206,17 @@ public class JoinMeetingImpl implements JoinMeetingDao {
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
             rs = pre.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 String userid = rs.getString(1);
                 String meetingid = rs.getString(2);
-                jm = new JoinMeeting(userid,meetingid);
+                jm = new JoinMeeting(userid, meetingid);
                 list.add(jm);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally{
+        } finally {
             DBConn.close();//关闭数据库连接
         }
         return list;
     }
-
-
 }

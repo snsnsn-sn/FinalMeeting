@@ -19,42 +19,35 @@ public class loginServlet extends HttpServlet {
         response.setContentType("text/html; charset=utf-8");
         response.setCharacterEncoding("utf-8");
 
-        PrintWriter out=response.getWriter();
-        HttpSession session=request.getSession(true);
+        PrintWriter out = response.getWriter();
+        HttpSession session = request.getSession(true);
 
-        String fun=request.getParameter("fun");
+        String fun = request.getParameter("fun");
 
-        if(fun.equals("login")){
-            String id=request.getParameter("loginID");
-            String pw=request.getParameter("loginPW");
+        if (fun.equals("login")) {
+            String id = request.getParameter("loginID");
+            String pw = request.getParameter("loginPW");
 
-            UserService userService=new UserService();
+            UserService userService = new UserService();
 
-            if(userService.login(id,pw)){
-                session.setAttribute("userID",id);
-                session.setAttribute("userName",userService.getNameById(id));
+            if (userService.login(id, pw)) {
+                session.setAttribute("userID", id);
+                session.setAttribute("userName", userService.getNameById(id));
                 out.print(0);
-                System.out.println("登录成功");
-            }
-            else{
+            } else {
                 out.print(1);
-                System.out.println("登陆失败");
             }
-        }
-        else if(fun.equals("exit")){
-            Enumeration em=request.getSession().getAttributeNames();
-            while(em.hasMoreElements()){
+        } else if (fun.equals("exit")) {
+            Enumeration em = request.getSession().getAttributeNames();
+            while (em.hasMoreElements()) {
                 request.getSession().removeAttribute(em.nextElement().toString());
             }
             response.sendRedirect("/ms/userPage/index.jsp");
-        }
-        else
-            System.out.println("未知请求"+fun);
+        } else
+            System.out.println("未知请求" + fun);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doPost(request,response);
+        doPost(request, response);
     }
-
-
 }

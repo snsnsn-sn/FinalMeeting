@@ -1,7 +1,7 @@
 package dao.impl;
 
 import dao.DBConnection.DBConn;
-import dao.OrderHotelRespository;
+import dao.OrderHotelDao;
 import vo.OrderHotel;
 
 import java.sql.Connection;
@@ -11,11 +11,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderHotelImpl implements OrderHotelRespository {
+public class OrderHotelImpl implements OrderHotelDao {
     Connection conn = null;
     PreparedStatement pre = null;
     ResultSet rs = null;
     OrderHotel oh = null;
+
     @Override
     public List<OrderHotel> findAll(int currentPage, int pageSize) {
         List<OrderHotel> list = new ArrayList<>();
@@ -46,17 +47,17 @@ public class OrderHotelImpl implements OrderHotelRespository {
 
     @Override
     public void insert(String userId, int people, int state) {
-        String sql="insert into orderhotel values (?,?,?)";
+        String sql = "insert into orderhotel values (?,?,?)";
         try {
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
-            pre.setString(1,userId);
-            pre.setInt(2,people);
-            pre.setInt(3,state);
+            pre.setString(1, userId);
+            pre.setInt(2, people);
+            pre.setInt(3, state);
             pre.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally{
+        } finally {
             DBConn.close();
         }
     }
@@ -67,29 +68,29 @@ public class OrderHotelImpl implements OrderHotelRespository {
         try {
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
-            pre.setString(1,userId);
+            pre.setString(1, userId);
             pre.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally{
+        } finally {
             DBConn.close();
         }
     }
 
     @Override
     public void update(String userId, String userId1, int people, int state) {
-        String sql="update orderhotel set userId = ?,people = ?,state = ? where userId = ?";
+        String sql = "update orderhotel set userId = ?,people = ?,state = ? where userId = ?";
         try {
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
-            pre.setString(1,userId1);
-            pre.setInt(2,people);
-            pre.setInt(3,state);
-            pre.setString(4,userId);
+            pre.setString(1, userId1);
+            pre.setInt(2, people);
+            pre.setInt(3, state);
+            pre.setString(4, userId);
             pre.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        }  finally{
+        } finally {
             DBConn.close();
         }
     }
@@ -101,13 +102,13 @@ public class OrderHotelImpl implements OrderHotelRespository {
         conn = DBConn.getConnection();
         try {
             pre = conn.prepareStatement(sql);
-            pre.setString(1,userId);
+            pre.setString(1, userId);
             rs = pre.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 String userid = rs.getString(1);
                 int people = rs.getInt(2);
                 int state = rs.getInt(3);
-                oh = new OrderHotel(userid,people,state);
+                oh = new OrderHotel(userid, people, state);
                 list.add(oh);
             }
         } catch (SQLException e) {
@@ -124,9 +125,8 @@ public class OrderHotelImpl implements OrderHotelRespository {
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
             rs = pre.executeQuery();
-            if(rs.next())
-            {
-                rowCount=rs.getInt(1);
+            if (rs.next()) {
+                rowCount = rs.getInt(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -143,11 +143,10 @@ public class OrderHotelImpl implements OrderHotelRespository {
         try {
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
-            pre.setString(1,userId);
+            pre.setString(1, userId);
             rs = pre.executeQuery();
-            if(rs.next())
-            {
-                rowCount=rs.getInt(1);
+            if (rs.next()) {
+                rowCount = rs.getInt(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
