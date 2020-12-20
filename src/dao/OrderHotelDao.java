@@ -19,16 +19,16 @@ public interface OrderHotelDao {
     public List<OrderHotel> findByHotelName(int currentPage, int pageSize, String hotelName);
 
     //增
-    public void insert(String userId, int people, int state, String hotelName,String orderTime);
+    public void insert(String userId, int people, int state, String hotelName, String orderTime);
 
     //根据用户 id 删
     public void deleteByUserId(String userId);
 
     //改,根据用户 id 改
-    public void update(String userId, String userId1, int people, int state, String hotelName,String orderTime);
+    public void update(String userId, String userId1, int people, int state, String hotelName, String orderTime);
 
     //改state的值
-    public void updateState(String userId,String time,int state);
+    public void updateState(String userId, String time, int state);
 
     //查总记录数
     public int count();
@@ -37,5 +37,5 @@ public interface OrderHotelDao {
     //查 hotelName 的记录数
     public int countHotel(String hotelName);
 
-    public void deleteByIdAndTime(String userId,String time);
+    public void deleteByIdAndTime(String userId, String time);
 }

@@ -10,8 +10,8 @@ public class DBConn {
     public static Statement stmt=null;
     public static ResultSet rs=null;
     private static String dbClassName = "com.mysql.cj.jdbc.Driver";
-    //private static String dbUrl = "jdbc:mysql://8.131.99.41:3306/javameeting?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC";
-    private static String dbUrl = "jdbc:mysql://localhost:3306/javameeting3?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC";
+    private static String dbUrl = "jdbc:mysql://8.131.99.41:3306/javameeting?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC";
+    //private static String dbUrl = "jdbc:mysql://localhost:3306/javameeting3?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC";
     private static String dbUser="root";
     private static String dbPwd="123456";
 

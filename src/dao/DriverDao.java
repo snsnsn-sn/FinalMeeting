@@ -22,4 +22,9 @@ public interface DriverDao {
 
     //查driver的信息
     public List<Driver> findByDriverId(String id);
+
+    //查driver的信息
+    public Driver findByDriverId1(String id);
+
+    public void updatePassword(String id,String password);
 }

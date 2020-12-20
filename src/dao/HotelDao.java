@@ -5,7 +5,7 @@ import vo.Hotel;
 import java.util.List;
 
 public interface HotelDao {
-    public boolean updatePassword(String id,String password);
+    public boolean updatePassword(String id, String password);
 
     public Hotel findByHotelId(String id);
     //实现分页的查找

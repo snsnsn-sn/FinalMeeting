@@ -16,6 +16,72 @@ public class AdminImpl implements AdminDao {
     PreparedStatement pre = null;
     ResultSet rs = null;
     Admin admin = null;
+    int flag;
+    @Override
+    public Admin findByAdminId(String adminId) {
+        ResultSet rs;
+        Admin u=null;
+
+        String sql = "select * from admin where adminId = ?";
+
+        conn = DBConn.getConnection();
+        try {
+            pre = conn.prepareStatement(sql);
+            pre.setString(1,adminId);
+            rs = pre.executeQuery();
+            while(rs.next()){
+                String adminId1 = rs.getString("adminId");
+                String password = rs.getString("password");
+                String name=rs.getString("name");
+                u = new Admin(adminId1,password,name);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            DBConn.close();
+        }
+
+        return u;
+    }
+
+    @Override
+    public boolean updateBasic(String userId, String name) {
+        String sql = "update user set name=?,phone=?,part=? where userId = ?";
+        try {
+            flag = 0;
+            conn = DBConn.getConnection();
+            pre = conn.prepareStatement(sql);
+            pre.setString(1, name);
+            pre.setString(2, userId);
+            flag = pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            DBConn.close();
+            return flag != 0;
+        }
+    }
+
+    @Override
+    public boolean updatePassword(String uid, String pw) {
+        String sql = "update admin set password=? where adminId=?";
+        try {
+            flag = 0;
+            conn = DBConn.getConnection();
+            pre = conn.prepareStatement(sql);
+            pre.setString(1, pw);
+            pre.setString(2, uid);
+            flag = pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            DBConn.close();
+            return flag != 0;
+        }
+    }
 
     @Override
     public List<Admin> findAll() {
@@ -71,32 +137,38 @@ public class AdminImpl implements AdminDao {
         return list;
     }
     @Override
-    public void insert(String id, String password,String name) {
+    public boolean insert(String id, String password,String name) {
         String sql="insert into admin values (?,?,?)";
         try {
+            flag = 0;
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
             pre.setString(1,id);
             pre.setString(2,password);
             pre.setString(3,name);
             pre.executeUpdate();
+            flag = pre.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         } finally{
             DBConn.close();
+            return flag != 0;
         }
     }
 
     @Override
-    public void deleteById(String id) {
+    public boolean deleteById(String id) {
         String sql="delete from admin where adminId = ?";
         try {
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
             pre.setString(1,id);
             pre.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         } finally{
             DBConn.close();
         }

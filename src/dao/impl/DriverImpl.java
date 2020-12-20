@@ -18,6 +18,47 @@ public class DriverImpl implements DriverDao {
     Driver driver = null;
 
     @Override
+    public void updatePassword(String id, String password) {
+        String sql="update driver set password = ? where driverId = ?";
+        try {
+            conn = DBConn.getConnection();
+            pre = conn.prepareStatement(sql);
+            pre.setString(1,password);
+            pre.setString(2,id);
+            pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }  finally{
+            DBConn.close();
+        }
+    }
+
+    @Override
+    public Driver findByDriverId1(String id) {
+        String sql = "select * from driver where driverId=?";
+        try {
+            conn = DBConn.getConnection();
+            pre = conn.prepareStatement(sql);
+            pre.setString(1,id);
+            rs = pre.executeQuery();
+            while(rs.next()){
+                String id1 = rs.getString(1);
+                String password = rs.getString(2);
+                String phone = rs.getString(3);
+                int passenger = rs.getInt(4);
+                int state = rs.getInt(5);
+                String driverName = rs.getString(6);
+                driver = new Driver(id1,password,phone,passenger,state,driverName);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally{
+            DBConn.close();
+        }
+        return driver;
+    }
+
+    @Override
     public List<Driver> findByDriverId(String id) {
         List<Driver> list = new ArrayList<>();
 
