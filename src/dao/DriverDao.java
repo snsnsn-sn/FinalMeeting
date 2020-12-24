@@ -26,5 +26,9 @@ public interface DriverDao {
     //查driver的信息
     public Driver findByDriverId1(String id);
 
-    public void updatePassword(String id,String password);
+    public void updatePassword(String id, String password);
+
+    public void deleteById(String id);
+
+    public void updateState(String driverId, int state);
 }

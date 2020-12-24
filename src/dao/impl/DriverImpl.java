@@ -18,6 +18,37 @@ public class DriverImpl implements DriverDao {
     Driver driver = null;
 
     @Override
+    public void updateState(String driverId, int state) {
+        String sql="update driver set state = ? where driverId = ?";
+        try {
+            conn = DBConn.getConnection();
+            pre = conn.prepareStatement(sql);
+            pre.setInt(1,state);
+            pre.setString(2,driverId);
+            pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }  finally{
+            DBConn.close();
+        }
+    }
+
+    //涂金伟添加
+    @Override
+    public void deleteById(String id) {
+        String sql="delete from driver where driverId = ?";
+        try {
+            conn = DBConn.getConnection();
+            pre = conn.prepareStatement(sql);
+            pre.setString(1,id);
+            pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally{
+            DBConn.close();
+        }
+    }
+    @Override
     public void updatePassword(String id, String password) {
         String sql="update driver set password = ? where driverId = ?";
         try {

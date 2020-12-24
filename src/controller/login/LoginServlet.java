@@ -1,6 +1,7 @@
 package controller.login;
 
 import dao.impl.*;
+import vo.CarTeam;
 import vo.Hotel;
 
 import javax.servlet.ServletException;
@@ -36,7 +37,9 @@ public class LoginServlet extends HttpServlet {
         switch (type){
             case "driver":
                 if(driver.check(id,password)&&verifycode.equals(TrueCode)){
-                    resp.sendRedirect("show.jsp");
+                    req.getSession().setAttribute("driver",driver.findByDriverId1(id));
+                    //resp.sendRedirect("/Final/carPage/drive/index.jsp");
+                    resp.sendRedirect("/Final/OrderCar?method=dFindOrder");
                 }
                 else if(!verifycode.equals(TrueCode)){
                     req.setAttribute("registInfo","验证码错误");
@@ -64,6 +67,8 @@ public class LoginServlet extends HttpServlet {
                 break;
             case "admin":
                 if(admin.check(id,password)&&verifycode.equals(TrueCode)){
+                    req.getSession().setAttribute("admin",admin.findByAdminId(id));
+
                     resp.sendRedirect("/Final/adminPage/index.jsp");
                 }
                 else if(!verifycode.equals(TrueCode)){
@@ -77,7 +82,12 @@ public class LoginServlet extends HttpServlet {
                 break;
             case "carteam":
                 if(carteam.check(id,password)&&verifycode.equals(TrueCode)){
-                    resp.sendRedirect("show.jsp");
+                    req.getSession().setAttribute("teamId",id);
+                    CarTeam c= carteam.findById(id);
+                    req.getSession().setAttribute("teamName",c.getTeamName());
+                    req.getSession().setAttribute("teamPassword",c.getPassword());
+                    //resp.sendRedirect("/Final/carPage/carTeam/index.jsp");
+                    resp.sendRedirect("/Final/OrderCar?method=findOrder");
                 }
                 else if(!verifycode.equals(TrueCode)){
                     req.setAttribute("registInfo","验证码错误");

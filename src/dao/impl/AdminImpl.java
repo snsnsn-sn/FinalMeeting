@@ -65,14 +65,14 @@ public class AdminImpl implements AdminDao {
     }
 
     @Override
-    public boolean updatePassword(String uid, String pw) {
+    public boolean updatePassword(String aid, String pw) {
         String sql = "update admin set password=? where adminId=?";
         try {
             flag = 0;
             conn = DBConn.getConnection();
             pre = conn.prepareStatement(sql);
             pre.setString(1, pw);
-            pre.setString(2, uid);
+            pre.setString(2, aid);
             flag = pre.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

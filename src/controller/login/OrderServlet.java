@@ -20,6 +20,7 @@ public class OrderServlet extends HttpServlet {
     HotelImpl hi = new HotelImpl();
     PickUserImpl pu = new PickUserImpl();
     DriverImpl di = new DriverImpl();
+    UserImpl ui = new UserImpl();
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
@@ -98,6 +99,13 @@ public class OrderServlet extends HttpServlet {
                 d = di.findByDriverId(driverId);
                 req.getSession().setAttribute("driverInfo",d);
                 resp.sendRedirect("/Final/driverInfo.jsp");
+                break;
+            case "showUserInfo":
+                String userId = req.getParameter("userId");
+
+                User U = ui.findByUserId1(userId);
+                req.getSession().setAttribute("UserInfo",U);
+                resp.sendRedirect("/Final/carPage/orderCharge/showUserInfo.jsp");
                 break;
         }
     }

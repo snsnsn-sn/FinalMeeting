@@ -67,6 +67,5 @@ public class changeInfoServlet extends HttpServlet {
         else{
             out.print(0);
         }
-
     }
 }

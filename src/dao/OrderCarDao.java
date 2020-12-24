@@ -26,4 +26,8 @@ public interface OrderCarDao {
     public int countUser(String userId);
     //查总记录数
     public int count();
+
+    public OrderCar findById(String id);
+    public void updateState(String userId, String deadline, int state);
+    public void deleteByIdAndTime(String id, String time);
 }

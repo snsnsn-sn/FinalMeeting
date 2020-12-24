@@ -18,6 +18,62 @@ public class OrderCarImpl implements OrderCarDao {
     OrderCar oc = null;
 
     @Override
+    public void deleteByIdAndTime(String id, String time) {
+        String sql = "delete from ordercar where userId = ? and deadline = ?";
+        try {
+            conn = DBConn.getConnection();
+            pre = conn.prepareStatement(sql);
+            pre.setString(1,id);
+            pre.setString(2,time);
+            pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally{
+            DBConn.close();
+        }
+    }
+
+    @Override
+    public void updateState(String userId, String deadline,int state) {
+        String sql="update ordercar set state = ? where userId = ? and deadline=?";
+        try {
+            conn = DBConn.getConnection();
+            pre = conn.prepareStatement(sql);
+            pre.setInt(1,state);
+            pre.setString(2,userId);
+            pre.setString(3,deadline);
+            pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }  finally{
+            DBConn.close();
+        }
+    }
+
+    @Override
+    public OrderCar findById(String id) {
+        String sql = "select * from driver where userId=?";
+        try {
+            conn = DBConn.getConnection();
+            pre = conn.prepareStatement(sql);
+            pre.setString(1,id);
+            rs = pre.executeQuery();
+            while(rs.next()){
+                String user = rs.getString(1);
+                int people = rs.getInt(2);
+                String place = rs.getString(3);
+                int state = rs.getInt(4);
+                String deadline = rs.getString(5);
+                oc = new OrderCar(user,people,place,state,deadline);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally{
+            DBConn.close();
+        }
+        return oc;
+    }
+    @Override
     public List<OrderCar> findByUserId(String userId) {
         List<OrderCar> list = new ArrayList<>();
         String sql = "select * from ordercar where userId = ? order by people";

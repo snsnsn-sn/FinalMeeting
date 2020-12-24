@@ -18,6 +18,48 @@ public class PickUserImpl implements PickUserDao {
     PickUser pk = null;
 
     @Override
+    public void deleteByUidAndDid(String uid, String did) {
+        String sql="delete from pickuser where userId = ? and driverId = ?";
+        try {
+            conn = DBConn.getConnection();
+            pre = conn.prepareStatement(sql);
+            pre.setString(1,uid);
+            pre.setString(2,did);
+            pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally{
+            DBConn.close();
+        }
+    }
+
+    @Override
+    public List<PickUser> findByDriverId(String driverId) {
+        List<PickUser> list = new ArrayList<>();
+
+        String sql = "select * from pickuser where driverId = ?";
+        try {
+            conn = DBConn.getConnection();
+            pre = conn.prepareStatement(sql);
+            pre.setString(1,driverId);
+            rs = pre.executeQuery();
+            while(rs.next()){
+                String userId1 = rs.getString(1);
+                String driverId1 = rs.getString(2);
+                String pickTime = rs.getString(3);
+                String pickPlace = rs.getString(4);
+                pk = new PickUser(userId1,driverId1,pickTime,pickPlace);
+                list.add(pk);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally{
+            DBConn.close();//关闭数据库连接
+        }
+        return list;
+    }
+
+    @Override
     public List<PickUser> findByUserId(String userId) {
         List<PickUser> list = new ArrayList<>();
 

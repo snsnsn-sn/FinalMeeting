@@ -24,7 +24,17 @@ public class AdminController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
-        doGet(request, response);
+        request.setCharacterEncoding("UTF-8");
+        String fun = request.getParameter("fun");
+        switch(fun){
+            case "alterInfo":
+                String aid = (String) request.getSession().getAttribute("admin");
+                String name = request.getParameter("alterName");
+                adminService.alterInfo(aid, name);
+                response.sendRedirect("/Final/adminPage/index.jsp");
+                break;
+
+        }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
@@ -149,18 +159,18 @@ public class AdminController extends HttpServlet {
     private void alterPassword(HttpServletRequest request, PrintWriter out) {
         String pw0 = request.getParameter("pw0");
         String pw1 = request.getParameter("pw1");
-        String uid = (String) request.getSession().getAttribute("adminID");
+        String aid = (String) request.getSession().getAttribute("admin");
 
-        if (adminService.alterPassword(uid, pw0, pw1))
+        if (adminService.alterPassword(aid, pw0, pw1))
             out.print(1);
         else
             out.print(0);
     }
 
     private void alterInfo(HttpServletRequest request, PrintWriter out) {
-        String uid = (String) request.getSession().getAttribute("adminID");
+        String aid = (String) request.getSession().getAttribute("admin");
         String name = request.getParameter("name");
-        if (adminService.alterInfo(uid, name))
+        if (adminService.alterInfo(aid, name))
             out.print(1);
         else
             out.print(0);

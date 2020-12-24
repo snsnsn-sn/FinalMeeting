@@ -1,8 +1,10 @@
 package controller.admin;
 
+import dao.impl.CarTeamImpl;
 import dao.impl.DriverImpl;
 import dao.impl.HotelImpl;
 import dao.impl.UserImpl;
+import vo.CarTeam;
 import vo.Driver;
 import vo.Hotel;
 import vo.User;
@@ -20,6 +22,7 @@ public class getInfoServlet extends HttpServlet {
     UserImpl us = new UserImpl();
     DriverImpl d = new DriverImpl();
     HotelImpl h = new HotelImpl();
+    CarTeamImpl ct = new CarTeamImpl();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
@@ -61,6 +64,18 @@ public class getInfoServlet extends HttpServlet {
                 req.getSession().setAttribute("user",us.findByUserId1(uid1));
                 resp.getWriter().print(1);
                 break;
+            case "carTeamDelete":
+                String teamid = req.getParameter("teamid");
+                ct.deleteById(teamid);
+                req.getSession().removeAttribute("carteam");
+                resp.getWriter().print(1);
+                break;
+            case "carTeamUpdate":
+                String teamid1 = req.getParameter("teamid");
+                ct.updatePassword(teamid1,"111111");
+                req.getSession().setAttribute("carteam",ct.findById(teamid1));
+                resp.getWriter().print(1);
+                break;
         }
     }
 
@@ -72,22 +87,48 @@ public class getInfoServlet extends HttpServlet {
 
         switch (type){
             case "driver":
+                req.getSession().removeAttribute("hotel");
+                req.getSession().removeAttribute("user");
+                req.getSession().removeAttribute("driver");
+                req.getSession().removeAttribute("carteam");
+
                 String did = req.getParameter("driverId");
                 Driver driver = d.findByDriverId1(did);
                 req.getSession().setAttribute("driver",driver);
                 resp.sendRedirect("/Final/adminPage/driverControl/info.jsp");
                 break;
             case "hotel":
+                req.getSession().removeAttribute("hotel");
+                req.getSession().removeAttribute("user");
+                req.getSession().removeAttribute("driver");
+                req.getSession().removeAttribute("carteam");
+
                 String hid = req.getParameter("hotelId");
                 Hotel hotel = h.findByHotelId(hid);
                 req.getSession().setAttribute("hotel",hotel);
                 resp.sendRedirect("/Final/adminPage/hotelControl/info.jsp");
                 break;
             case "user":
+                req.getSession().removeAttribute("hotel");
+                req.getSession().removeAttribute("user");
+                req.getSession().removeAttribute("driver");
+                req.getSession().removeAttribute("carteam");
+
                 String uid = req.getParameter("userId");
                 User user = us.findByUserId1(uid);
                 req.getSession().setAttribute("user",user);
                 resp.sendRedirect("/Final/adminPage/index.jsp");
+                break;
+            case "carteam":
+                req.getSession().removeAttribute("hotel");
+                req.getSession().removeAttribute("user");
+                req.getSession().removeAttribute("driver");
+                req.getSession().removeAttribute("carteam");
+
+                String teamid = req.getParameter("carTeamId");
+                CarTeam carTeam = ct.findById(teamid);
+                req.getSession().setAttribute("carteam",carTeam);
+                resp.sendRedirect("/Final/adminPage/carTeamControl/info.jsp");
                 break;
         }
     }

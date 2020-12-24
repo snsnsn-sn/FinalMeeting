@@ -11,6 +11,8 @@ public interface PickUserDao {
     public List<PickUser> findAll();
     //根据司机名找记录
     public List<PickUser> findByDriverId(String driverId, int currentPage, int pageSize);
+    public List<PickUser> findByDriverId(String driverId);
+
     //根据用户名找记录
     public List<PickUser> findByUserId(String userId, int currentPage, int pageSize);
     public List<PickUser> findByUserId(String userId);
@@ -28,6 +30,8 @@ public interface PickUserDao {
     public int countDriver(String driverId);
     //查找userId的乘车记录
     public int countUser(String userId);
+
+    public void deleteByUidAndDid(String uid, String did);
 
 
 }
