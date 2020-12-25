@@ -2,6 +2,7 @@ package controller.meeting;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.impl.ImgImpl;
 import service.MeetingService;
 import vo.Meeting;
 import vo.MeetingInfo;
@@ -19,9 +20,11 @@ import java.util.List;
 @WebServlet("/meeting")
 public class MeetingController extends HttpServlet {
     private MeetingService meetingService;
+    private ImgImpl imgImpl;
 
     public MeetingController() {
         meetingService = new MeetingService();
+        imgImpl = new ImgImpl();
         System.out.println("MeetingController构造");
     }
 
@@ -38,6 +41,10 @@ public class MeetingController extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         switch (fun) {
+            case "getImg": {
+                getImg(request, out);
+                break;
+            }
             //查询系统全部会议
             case "findAll": {
                 findAll(request, out);
@@ -180,6 +187,7 @@ public class MeetingController extends HttpServlet {
     //通过会议id查询
     private void queryByMeetingId(HttpServletRequest request, PrintWriter out) throws JsonProcessingException {
         String mid = request.getParameter("mid");
+        request.getSession().setAttribute("mid", mid);//存入session
         List<Meeting> meetings = meetingService.getMeetingByMeetingId(mid);
         if (meetings.size() == 0)
             out.print(0);
@@ -366,5 +374,10 @@ public class MeetingController extends HttpServlet {
             out.print(1);
         } else
             out.print(0);
+    }
+    //获取会议图片
+    private void getImg(HttpServletRequest request, PrintWriter out) throws JsonProcessingException {
+        String mid = request.getParameter("mid");
+        out.print(imgImpl.getImgPath(mid));
     }
 }
